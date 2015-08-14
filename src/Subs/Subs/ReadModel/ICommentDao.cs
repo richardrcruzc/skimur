@@ -13,11 +13,11 @@ namespace Subs.ReadModel
 
         List<Comment> GetCommentsByIds(List<Guid> ids);
             
-        List<Comment> GetAllCommentsForPost(string postSlug, CommentSortBy? sortBy = null);
+        List<Comment> GetAllCommentsForPost(Guid postId, CommentSortBy? sortBy = null);
+        
+        Dictionary<Guid, double> GetCommentTreeSorter(Guid postId, CommentSortBy sortBy);
 
-        CommentTree GetCommentTree(string postSlug);
-
-        Dictionary<Guid, double> GetCommentTreeSorter(string postSlug, CommentSortBy sortBy);
+        CommentTree GetCommentTree(Guid postId);
     }
     
     public enum CommentSortBy

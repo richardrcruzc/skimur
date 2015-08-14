@@ -7,46 +7,101 @@ namespace Subs.ReadModel
 {
     public interface ICommentNodeHierarchyBuilder
     {
-        List<CommentNode> Build(CommentTree tree, CommentTreeContext treeContext, User currentUser);
-
-        Dictionary<Guid, CommentNode> WrapComments(List<Guid> comments, User currentUser);
+        List<ICommentNode> Build(CommentTree tree, CommentTreeContext treeContext, User currentUser);
     }
 
-    public class CommentNode
+    public enum NodeType
     {
-        public CommentNode()
+        Comment,
+        MoreChildren,
+        MoreRecursion
+    }
+
+    public interface ICommentNode
+    {
+        NodeType NodeType { get; }
+
+        List<ICommentNode> Children { get; }
+    }
+    
+    public class CommentNode : ICommentNode
+    {
+        public CommentNode(CommentWrapped commentWrapped)
         {
-            Children = new List<CommentNode>();
+            Comment = commentWrapped;
+            Children = new List<ICommentNode>();
         }
 
-        public Comment Comment { get; set; }
+        public CommentWrapped Comment { get; set; }
 
-        public List<CommentNode> Children { get; set; }
-
-        public CommentNode Parent { get; set; }
-
-        public User Author { get; set; }
-
-        public VoteType? CurrentUserVote { get; set; }
-
-        public Sub Sub { get; set; }
+        public CommentWrapped Parent { get; set; }
 
         public int NumberOfChildren { get; set; }
-
+        
         public bool Collapsed { get; set; }
 
-        public int Score { get; set; }
-        
-        public bool CurrentUserIsAuthor { get; set; }
-
-        public bool CanDelete { get; set; }
-
-        public bool CanEdit { get; set; }
-
-        public bool MoreRecursion { get; set; }
-
-        public Post Post { get; set; }
-
         public bool IsParentVisible { get; set; }
+
+        #region INode
+
+        public NodeType NodeType
+        {
+            get { return NodeType.Comment; }
+        }
+
+        public List<ICommentNode> Children { get; set; }
+        
+        #endregion
+    }
+
+    public class MoreRecursionNode : ICommentNode
+    {
+        public MoreRecursionNode(CommentWrapped commentWrapped)
+        {
+            Comment = commentWrapped;
+            Children = new List<ICommentNode>();
+        }
+
+        public CommentWrapped Comment { get; set; }
+        
+        #region INode
+
+        public NodeType NodeType
+        {
+            get { return NodeType.MoreRecursion; }
+        }
+
+        public List<ICommentNode> Children { get; set; }
+
+        #endregion
+    }
+
+    public class MoreChildren : ICommentNode
+    {
+        public MoreChildren()
+        {
+            ChildComments = new List<Guid>();
+        }
+
+        public List<Guid> ChildComments { get; set; }
+
+        public int MissingCount { get; set; }
+
+        public int Depth { get; set; }
+
+        public CommentSortBy Sort { get; set; }
+        
+        public Guid PostId { get; set; }
+
+        #region INode
+
+        public NodeType NodeType
+        {
+            get { return NodeType.MoreChildren; }
+        }
+
+        public List<ICommentNode> Children { get; set; }
+
+        #endregion
     }
 }

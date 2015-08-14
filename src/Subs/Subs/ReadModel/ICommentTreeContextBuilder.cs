@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Subs.ReadModel;
+using Subs.Services;
 
-namespace Subs.Services
+namespace Subs.ReadModel
 {
     public interface ICommentTreeContextBuilder
     {
@@ -26,6 +23,7 @@ namespace Subs.Services
         {
             Comments = new List<Guid>();
             TopLevelComments = new List<Guid>();
+            TopLevelCandidates = new List<Guid>();
             MoreRecursion = new List<Guid>();
             CommentsChildrenCount = new Dictionary<Guid, int>();
             DontCollapse = new List<Guid>();
@@ -35,6 +33,8 @@ namespace Subs.Services
 
         public List<Guid> TopLevelComments { get; set; }
 
+        public List<Guid> TopLevelCandidates { get; set; }
+
         public List<Guid> MoreRecursion { get; set; }
 
         public Dictionary<Guid, int> CommentsChildrenCount { get; set; }
@@ -42,5 +42,9 @@ namespace Subs.Services
         public List<Guid> DontCollapse { get; set; }
 
         public int OffsetDepth { get; set; }
+
+        public int? MaxDepth { get; set; }
+
+        public CommentSortBy Sort { get; set; }
     }
 }

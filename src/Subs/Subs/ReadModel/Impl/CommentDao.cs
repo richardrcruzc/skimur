@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Infrastructure.Data;
 using ServiceStack.OrmLite;
 using Subs.Services;
+using Subs.Services.Impl;
 
-namespace Subs.ReadModel
+namespace Subs.ReadModel.Impl
 {
     public class CommentDao
         // this class temporarily implements the service, until we implement the proper read-only layer
@@ -15,33 +14,22 @@ namespace Subs.ReadModel
     {
         private readonly IDbConnectionProvider _conn;
         private readonly ICommentTreeBuilder _commentTreeBuilder;
-        private readonly ICommentTreeContextBuilder _commentTreeContextBuilder;
 
         public CommentDao(IDbConnectionProvider conn,
-            ICommentTreeBuilder commentTreeBuilder,
-            ICommentTreeContextBuilder commentTreeContextBuilder)
+            ICommentTreeBuilder commentTreeBuilder)
             : base(conn)
         {
             _conn = conn;
             _commentTreeBuilder = commentTreeBuilder;
-            _commentTreeContextBuilder = commentTreeContextBuilder;
         }
-
-        public CommentTree GetCommentTree(string postSlug)
-        {
-            return _commentTreeBuilder.GetCommentTree(postSlug);
-        }
-
-        public Dictionary<Guid, double> GetCommentTreeSorter(string postSlug, CommentSortBy sortBy)
+        
+        public Dictionary<Guid, double> GetCommentTreeSorter(Guid postId, CommentSortBy sortBy)
         {
             // TODO: This should be cached and updated periodically
-
-            if (string.IsNullOrEmpty(postSlug))
-                return new Dictionary<Guid, double>();
-
+            
             return _conn.Perform(conn =>
             {
-                var query = conn.From<Comment>().Where(x => x.PostSlug == postSlug);
+                var query = conn.From<Comment>().Where(x => x.PostId == postId);
 
                 switch (sortBy)
                 {
@@ -73,6 +61,11 @@ namespace Subs.ReadModel
 
                 return commentsSorted.ToDictionary(x => x, x => (double)commentsSorted.IndexOf(x));
             });
+        }
+
+        public CommentTree GetCommentTree(Guid postId)
+        {
+            return _commentTreeBuilder.GetCommentTree(postId);
         }
     }
 }

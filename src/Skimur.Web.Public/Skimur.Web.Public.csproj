@@ -318,15 +318,16 @@
     <Content Include="Views\Subs\_SideBarSearch.cshtml" />
     <Content Include="Views\Subs\Search.cshtml" />
     <Content Include="Views\Subs\Post.cshtml" />
-    <Content Include="Views\Subs\_Comments.cshtml" />
+    <Content Include="Views\Subs\_CommentNodes.cshtml" />
     <Content Include="Views\Shared\_LoginModal.cshtml" />
     <Content Include="Views\Shared\LoginModal\Register.cshtml" />
     <Content Include="Views\Shared\LoginModal\SignIn.cshtml" />
     <Content Include="Views\Manage\_ManageNavigation.cshtml" />
     <Content Include="Views\Manage\_LayoutManageAccount.cshtml" />
     <Content Include="Views\Shared\_Avatar.cshtml" />
-    <Content Include="Views\Subs\_Comment.cshtml" />
+    <Content Include="Views\Subs\_CommentNode.cshtml" />
     <Content Include="Views\Subs\_CommentBody.cshtml" />
+    <Content Include="Views\SubBans\Bans.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />

@@ -7,15 +7,15 @@ namespace Subs.Services
 {
     public interface ISubService
     {
-        SeekedList<Sub> GetAllSubs(string searchText = null, SubsSortBy sortBy = SubsSortBy.Relevance, int? skip = null, int? take = null);
+        SeekedList<Guid> GetAllSubs(string searchText = null, SubsSortBy sortBy = SubsSortBy.Relevance, int? skip = null, int? take = null);
 
-        List<Sub> GetDefaultSubs();
+        List<Guid> GetDefaultSubs();
 
-        List<Sub> GetSubscribedSubsForUser(string userName);
+        List<Guid> GetSubscribedSubsForUser(Guid userId);
 
-        bool IsUserSubscribedToSub(string userName, string subName);
+        bool IsUserSubscribedToSub(Guid userId, Guid subId);
 
-        Sub GetRandomSub();
+        Guid? GetRandomSub();
 
         void InsertSub(Sub sub);
 
@@ -23,22 +23,24 @@ namespace Subs.Services
 
         void DeleteSub(Guid subId);
 
-        void SubscribeToSub(string userName, string subName);
+        void SubscribeToSub(Guid userId, Guid subId);
 
-        void UnSubscribeToSub(string userName, string subName);
+        void UnSubscribeToSub(Guid userId, Guid subId);
 
         Sub GetSubByName(string name);
 
-        List<Sub> GetSubByNames(List<string> names);
+        List<Sub> GetSubsByIds(List<Guid> ids);
 
-        bool CanUserModerateSub(string userName, string subName);
+        Sub GetSubById(Guid id);
 
-        List<string> GetAllModsForSub(string subName);
+        bool CanUserModerateSub(Guid userId, Guid subId);
 
-        void AddModToSub(string userName, string subName, string addedBy = null);
+        List<Guid> GetAllModsForSub(Guid subId);
 
-        void RemoveModFromSub(string userName, string subName);
+        void AddModToSub(Guid userId, Guid subId, Guid? addedBy = null);
 
-        void UpdateNumberOfSubscribers(string subName, out ulong totalNumber);
+        void RemoveModFromSub(Guid userId, Guid subId);
+
+        void UpdateNumberOfSubscribers(Guid subId, out ulong totalNumber);
     }
 }

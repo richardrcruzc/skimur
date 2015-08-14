@@ -9,23 +9,25 @@ namespace Subs.ReadModel
 {
     public interface ISubDao
     {
-        SeekedList<Sub> GetAllSubs(string searchText = null, SubsSortBy sortBy = SubsSortBy.Relevance, int? skip = null, int? take = null);
+        SeekedList<Guid> GetAllSubs(string searchText = null, SubsSortBy sortBy = SubsSortBy.Relevance, int? skip = null, int? take = null);
 
-        List<Sub> GetDefaultSubs();
+        List<Guid> GetDefaultSubs();
 
-        List<Sub> GetSubscribedSubsForUser(string userName);
+        List<Guid> GetSubscribedSubsForUser(Guid userId);
 
-        bool IsUserSubscribedToSub(string userName, string subName);
+        bool IsUserSubscribedToSub(Guid userId, Guid subId);
 
-        Sub GetRandomSub();
+        Guid? GetRandomSub();
 
         Sub GetSubByName(string name);
 
-        List<Sub> GetSubByNames(List<string> names);
+        List<Sub> GetSubsByIds(List<Guid> ids);
 
-        bool CanUserModerateSub(string userName, string subName);
+        Sub GetSubById(Guid id);
 
-        List<string> GetAllModsForSub(string subName);
+        bool CanUserModerateSub(Guid userId, Guid subId);
+
+        List<Guid> GetAllModsForSub(Guid subId);
     }
 
     public enum SubsSortBy

@@ -1,6 +1,6 @@
 ﻿; skimurui.comments = (function () {
 
-    var getComment = function(element) {
+    var getComment = function (element) {
         return $(element).closest(".comment");
     };
 
@@ -18,6 +18,10 @@
     };
 
     var voteUp = function (element) {
+
+        if (!skimurui.login.checkLoggedIn("You must be logged in to vote."))
+            return;
+
         var $comment = getComment(element);
         var $voting = $("> .comment-body .comment-voting", $comment);
 
@@ -53,6 +57,10 @@
     };
 
     var voteDown = function (element) {
+
+        if (!skimurui.login.checkLoggedIn("You must be logged in to vote."))
+            return;
+
         var $comment = getComment(element);
         var $voting = $("> .comment-body .comment-voting", $comment);
 
@@ -87,7 +95,11 @@
         }
     };
 
-    var startReply = function(element) {
+    var startReply = function (element) {
+
+        if (!skimurui.login.checkLoggedIn("You must be logged in to comment."))
+            return;
+
         var comment = cancel(element);
         var $textArea = $("<textarea />").appendTo(comment.staging);
 
@@ -99,7 +111,7 @@
             .appendTo($buttonsContainer)
             .click(function (e) {
                 e.preventDefault();
-                skimur.createComment(comment.comment.data("post-slug"), comment.comment.data("comment-id"), $textArea.val(), function (result) {
+                skimur.createComment(comment.comment.data("post-id"), comment.comment.data("comment-id"), $textArea.val(), function (result) {
                     cancel(element);
                     if (result.success) {
                         $(result.html).insertAfter($("> .comment-body", comment.comment));
@@ -122,7 +134,7 @@
         $textArea.focus();
     };
 
-    var startEdit = function(element) {
+    var startEdit = function (element) {
         var comment = cancel(element);
         var $textArea = $("<textarea />")
             .appendTo(comment.staging)
@@ -159,7 +171,7 @@
         $textArea.focus();
     };
 
-    var toggleExpand = function(element) {
+    var toggleExpand = function (element) {
         var $comment = getComment(element);
         if ($comment.hasClass("collapsed")) {
             $comment.removeClass("collapsed");
@@ -186,13 +198,21 @@
         });
     };
 
+    var moreChildren = function (element, postId, sort, children, depth) {
+        var $comment = getComment(element);
+        skimur.moreComments(postId, sort, children, depth, function(result) {
+            $comment.after($(result.html)).remove();
+        });
+    }
+
     return {
         voteUp: voteUp,
         voteDown: voteDown,
         startReply: startReply,
         startEdit: startEdit,
         toggleExpand: toggleExpand,
-        delete: deleteComment
+        delete: deleteComment,
+        moreChildren: moreChildren
     };
 
 })();
@@ -201,40 +221,8 @@ $(function () {
 
     $.fn.comment = function () {
         return this.each(function () {
-            
-        });
-    };
 
-    $.buildComment = function (comment) {
-        var $comment = $(
-        "<div class='comment' data-post-slug='" + comment.postSlug + "' data-comment-id='" + comment.commentId + "'>" +
-            "<div class='comment-voting'>" +
-                "<span class='up'></span>" +
-                "<span class='down'></span>" +
-            "</div>" +
-            "<div class='comment-body'>" +
-                "<div class='comment-tagline'>" +
-                    "<a href='javascript:void(0)' class='expand'>[–]</a> <a href='/u/" + comment.author + "' class='author'>" + comment.author + "</a> <span class='score'>" + comment.score + " points</span> <time class='timestamp'>" + comment.dateCreatedAgo + "</time>" +
-                "</div>" +
-                "<div class='comment-md'>" +
-                comment.bodyFormatted +
-                "</div>" +
-                "<textarea class='comment-md-unformatted hidden'>" + comment.body + "</textarea>" +
-                       "<ul class='comment-options'>" +
-                           "<li>" +
-                               "<a href='javascript:void(0);' class='reply'>reply</a>" +
-                           "</li>" +
-                           "<li>" +
-                               "<a href='javascript:void(0);' class='edit'>edit</a>" +
-                           "</li>" +
-                       "</ul>" +
-                       "<div class='comment-staging hidden'></div>" +
-                   "</div>" +
-                "<div class='clearfix'></div>" +
-            "</div>" +
-        "</div>"
-        );
-        return $comment;
+        });
     };
 
     $(".comment").comment();

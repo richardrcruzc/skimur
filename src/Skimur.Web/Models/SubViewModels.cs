@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Infrastructure.Membership;
+using Subs;
 using Subs.ReadModel;
 
 namespace Skimur.Web.Models
@@ -14,27 +17,12 @@ namespace Skimur.Web.Models
 
         public bool IsEditing { get; set; }
     }
-
-    public class SubModel
-    {
-        public Guid Id { get; set; }
-
-        public DateTime CreatedDate { get; set; }
-
-        public string Name { get; set; }
-
-        public string Description { get; set; }
-
-        public bool IsSubscribed { get; set; }
-
-        public ulong NumberOfSubscribers { get; set; }
-    }
-
+    
     public class SubPostsModel
     {
-        public SubModel Sub { get; set; }
+        public SubWrapped Sub { get; set; }
 
-        public PagedList<PostModel> Posts { get; set; }
+        public PagedList<PostWrapped> Posts { get; set; }
 
         public PostsSortBy SortBy { get; set; }
 
@@ -47,11 +35,11 @@ namespace Skimur.Web.Models
     {
         public string Query { get; set; }
 
-        public SubModel LimitingToSub { get; set; }
+        public SubWrapped LimitingToSub { get; set; }
 
-        public PagedList<SubModel> Subs { get; set; }
+        public PagedList<SubWrapped> Subs { get; set; }
 
-        public PagedList<PostModel> Posts { get; set; }
+        public PagedList<PostWrapped> Posts { get; set; }
 
         public PostsSearchSortBy SortBy { get; set; }
 
@@ -64,5 +52,26 @@ namespace Skimur.Web.Models
     {
         Sub,
         Post
+    }
+
+    public class BannedUsersFromSub
+    {
+        public Sub Sub { get; set; }
+
+        public PagedList<SubUserBanWrapped> Users { get; set; }
+
+        public BanUserModel BanUser { get; set; }
+    }
+
+    public class BanUserModel
+    {
+        [Required]
+        public string UserName { get; set; }
+
+        public DateTime? BannedUntil { get; set; }
+        
+        public string ReasonPrivate { get; set; }
+
+        public string ReasonPublic { get; set; }
     }
 }

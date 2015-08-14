@@ -47,24 +47,34 @@ namespace Skimur.Web
             return urlHelper.Action("Edit", "Subs", new { id = name });
         }
 
+        public static string SubBans(this UrlHelper urlHelper, string name)
+        {
+            return urlHelper.RouteUrl("SubBans", new {subName = name});
+        }
+
+        public static string SubBan(this UrlHelper urlHelper, string name)
+        {
+            return urlHelper.RouteUrl("SubBan", new { subName = name });
+        }
+
         public static string CreatePost(this UrlHelper urlHelper)
         {
             return urlHelper.Action("CreatePost", "Subs");
         }
 
-        public static string Post(this UrlHelper urlHelper, string subName, string slug, string title = null)
+        public static string Post(this UrlHelper urlHelper, string subName, Guid id, string title = null)
         {
-            return urlHelper.RouteUrl("Post", new { subName, slug, title = title.UrlFriendly() });
+            return urlHelper.RouteUrl("Post", new { subName, id, title = title.UrlFriendly() });
         }
 
-        public static string Post(this UrlHelper urlHelper, Post post)
+        public static string Post(this UrlHelper urlHelper, Sub sub, Post post)
         {
-            return urlHelper.Post(post.SubName, post.Slug, post.Title);
+            return urlHelper.Post(sub.Name, post.Id, post.Title);
         }
 
         public static string Comment(this UrlHelper urlHelper, string subName, Post post, Comment comment)
         {
-            return urlHelper.RouteUrl("PostComment", new { subName, slug = post.Slug, title=post.Title.UrlFriendly(), commentId = comment.Id });
+            return urlHelper.RouteUrl("PostComment", new { subName, id = post.Id, title=post.Title.UrlFriendly(), commentId = comment.Id });
         }
 
         public static string User(this UrlHelper urlHelper, string userName)

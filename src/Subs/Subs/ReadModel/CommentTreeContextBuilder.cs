@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Skimur.PriorityQueue;
+using Subs.Services;
 
-namespace Subs.Services
+namespace Subs.ReadModel
 {
     public class CommentTreeContextBuilder : ICommentTreeContextBuilder
     {
@@ -23,6 +22,7 @@ namespace Subs.Services
                 throw new Exception("You cannot build a tree for both a single comment, and multiple comments.");
             
             var result = new CommentTreeContext();
+            result.MaxDepth = maxDepth;
 
             if (children != null && children.Count == 0)
                 return result;
@@ -94,8 +94,9 @@ namespace Subs.Services
             
             result.Comments.AddRange(items);
             result.TopLevelComments.AddRange(result.Comments.Where(x => commentTree.Depth[x] == 0));
+            result.TopLevelCandidates = candidates.Where(x => ((commentTree.Depth.ContainsKey(x.CommentId) ? commentTree.Depth[x.CommentId] : 0) == 0)).Select(x => x.CommentId).ToList();
 
-            UpdateChildrenCount(result, commentTree, items);
+            UpdateChildrenCount(result, commentTree, items.Union(result.TopLevelCandidates).ToList());
             
             return result;
         }

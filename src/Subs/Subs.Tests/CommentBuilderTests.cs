@@ -12,7 +12,9 @@ using NUnit.Framework;
 using Skimur;
 using Skimur.Tests;
 using Subs.ReadModel;
+using Subs.ReadModel.Impl;
 using Subs.Services;
+using Subs.Services.Impl;
 
 namespace Subs.Tests
 {
@@ -26,6 +28,7 @@ namespace Subs.Tests
         private Mock<IPermissionDao> _permissionDao;
         private Mock<IVoteDao> _voteDao;
         private Mock<IPostDao> _postDao;
+        private ICommentWrapper _commentWrapper;
         private ICommentTreeBuilder _commentTreeBuilder;
         private ICommentTreeContextBuilder _commentTreeContextBuilder;
         private ICommentNodeHierarchyBuilder _commentNodeHierarchyBuilder;
@@ -35,7 +38,7 @@ namespace Subs.Tests
         {
             // arrange
             var comments = CreateTreeComments();
-            var tree = _commentTreeBuilder.GetCommentTree(null);
+            var tree = _commentTreeBuilder.GetCommentTree(Guid.Empty);
             var sorter = comments.ToDictionary(x => x.Id, x => (double)comments.IndexOf(comments.Single(y => y.Id == x.Id)));
 
             // act
@@ -62,7 +65,7 @@ namespace Subs.Tests
             grandChild1.Id = Guid.NewGuid();
             grandChild1.ParentId = commentChild2.Id;
             SetupComments(new List<Comment> { comment, commentChild1, commentChild2, grandChild1 });
-            var tree = _commentTreeBuilder.GetCommentTree(null);
+            var tree = _commentTreeBuilder.GetCommentTree(Guid.Empty);
 
             // act
             var result = _commentTreeContextBuilder.Build(tree, new Dictionary<Guid, double>());
@@ -90,7 +93,7 @@ namespace Subs.Tests
             grandChild1.Id = Guid.NewGuid();
             grandChild1.ParentId = commentChild2.Id;
             SetupComments(new List<Comment> { comment, commentChild1, commentChild2, grandChild1 });
-            var tree = _commentTreeBuilder.GetCommentTree(null);
+            var tree = _commentTreeBuilder.GetCommentTree(Guid.Empty);
 
             // act
             var result = _commentTreeContextBuilder.Build(tree, new Dictionary<Guid, double>(), maxDepth: 1);
@@ -112,7 +115,7 @@ namespace Subs.Tests
         {
             // arrange
             CreateTreeComments();
-            var tree = _commentTreeBuilder.GetCommentTree(null);
+            var tree = _commentTreeBuilder.GetCommentTree(Guid.Empty);
             var comment1 = tree.Tree[Guid.Empty][0];
             var comment2 = tree.Tree[Guid.Empty][2];
 
@@ -130,7 +133,7 @@ namespace Subs.Tests
         {
             // arrange
             CreateTreeComments();
-            var tree = _commentTreeBuilder.GetCommentTree(null);
+            var tree = _commentTreeBuilder.GetCommentTree(Guid.Empty);
 
             // act
             var result = _commentTreeContextBuilder.Build(tree, null, comment: tree.Tree[Guid.Empty][0], maxDepth: 1);
@@ -151,8 +154,10 @@ namespace Subs.Tests
         {
             // arrange
             var sub = new Sub();
+            sub.Id = GuidUtil.NewSequentialId();
             sub.Name = "test";
             var author = new User();
+            author.Id = GuidUtil.NewSequentialId();
             author.UserName = "author";
             var comments = ConvertTestNodesToComments(new List<TestNodeTreeSorted>
             {
@@ -168,34 +173,34 @@ namespace Subs.Tests
             });
             foreach (var comment in comments)
             {
-                comment.SubName = sub.Name;
-                comment.AuthorUserName = author.UserName;
+                comment.SubId = sub.Id;
+                comment.AuthorUserId = author.Id;
             }
             SetupComments(comments);
-            _membershipService.Setup(x => x.GetUsersByUserNames(It.IsAny<List<string>>())).Returns(new List<User> {author});
-            _subDao.Setup(x => x.GetSubByNames(It.IsAny<List<string>>())).Returns(new List<Sub> {sub});
+            _membershipService.Setup(x => x.GetUsersByIds(It.IsAny<List<Guid>>())).Returns(new List<User> {author});
+            _subDao.Setup(x => x.GetSubsByIds(It.IsAny<List<Guid>>())).Returns(new List<Sub> {sub});
 
             // act
-            var tree = _commentTreeBuilder.GetCommentTree(null);
+            var tree = _commentTreeBuilder.GetCommentTree(Guid.Empty);
             var treeContext = _commentTreeContextBuilder.Build(tree,
                 comments.ToDictionary(x => x.Id, x => (double) x.SortConfidence));
             var nodes = _commentNodeHierarchyBuilder.Build(tree, treeContext, null);
 
             //assert
             Assert.That(nodes, Has.Count.EqualTo(2));
-            Assert.That(nodes[0].Comment.SortConfidence, Is.EqualTo(10));
-            Assert.That(nodes[0].Children, Has.Count.EqualTo(2));
-            Assert.That(nodes[0].Children[0].Comment.SortConfidence, Is.EqualTo(5));
-            Assert.That(nodes[0].Children[1].Comment.SortConfidence, Is.EqualTo(4));
-            Assert.That(nodes[0].Children[1].Children, Has.Count.EqualTo(2));
-            Assert.That(nodes[0].Children[1].Children[0].Comment.SortConfidence, Is.EqualTo(20));
-            Assert.That(nodes[0].Children[1].Children[1].Comment.SortConfidence, Is.EqualTo(2));
-            Assert.That(nodes[1].Comment.SortConfidence, Is.EqualTo(9));
-            Assert.That(nodes[1].Children, Has.Count.EqualTo(2));
-            Assert.That(nodes[1].Children[0].Comment.SortConfidence, Is.EqualTo(12));
-            Assert.That(nodes[1].Children[1].Comment.SortConfidence, Is.EqualTo(3));
-            Assert.That(nodes[1].Children[1].Children, Has.Count.EqualTo(1));
-            Assert.That(nodes[1].Children[1].Children[0].Comment.SortConfidence, Is.EqualTo(1));
+            Assert.That(nodes[0].As<CommentNode>().Comment.Comment.SortConfidence, Is.EqualTo(10));
+            Assert.That(nodes[0].As<CommentNode>().Children, Has.Count.EqualTo(2));
+            Assert.That(nodes[0].As<CommentNode>().Children[0].As<CommentNode>().Comment.Comment.SortConfidence, Is.EqualTo(5));
+            Assert.That(nodes[0].As<CommentNode>().Children[1].As<CommentNode>().Comment.Comment.SortConfidence, Is.EqualTo(4));
+            Assert.That(nodes[0].As<CommentNode>().Children[1].Children, Has.Count.EqualTo(2));
+            Assert.That(nodes[0].As<CommentNode>().Children[1].Children[0].As<CommentNode>().Comment.Comment.SortConfidence, Is.EqualTo(20));
+            Assert.That(nodes[0].As<CommentNode>().Children[1].Children[1].As<CommentNode>().Comment.Comment.SortConfidence, Is.EqualTo(2));
+            Assert.That(nodes[1].As<CommentNode>().Comment.Comment.SortConfidence, Is.EqualTo(9));
+            Assert.That(nodes[1].As<CommentNode>().Children, Has.Count.EqualTo(2));
+            Assert.That(nodes[1].As<CommentNode>().Children[0].As<CommentNode>().Comment.Comment.SortConfidence, Is.EqualTo(12));
+            Assert.That(nodes[1].As<CommentNode>().Children[1].As<CommentNode>().Comment.Comment.SortConfidence, Is.EqualTo(3));
+            Assert.That(nodes[1].As<CommentNode>().Children[1].Children, Has.Count.EqualTo(1));
+            Assert.That(nodes[1].As<CommentNode>().Children[1].Children[0].As<CommentNode>().Comment.Comment.SortConfidence, Is.EqualTo(1));
         }
 
         [SetUp]
@@ -207,9 +212,10 @@ namespace Subs.Tests
             _subDao = new Mock<ISubDao>();
             _permissionDao = new Mock<IPermissionDao>();
             _voteDao = new Mock<IVoteDao>();
+            _commentWrapper = new CommentWrapper(_commentDao.Object, _membershipService.Object, _subDao.Object, _postDao.Object, _permissionDao.Object, _voteDao.Object);
             _commentTreeBuilder = new CommentTreeBuilder(_commentService.Object);
             _commentTreeContextBuilder = new CommentTreeContextBuilder();
-            _commentNodeHierarchyBuilder = new CommentNodeHierarchyBuilder(_commentDao.Object, _membershipService.Object, _subDao.Object, _permissionDao.Object, _voteDao.Object, _postDao.Object);
+            _commentNodeHierarchyBuilder = new CommentNodeHierarchyBuilder(_commentWrapper);
         }
 
         private List<Comment> CreateTreeComments()
@@ -255,7 +261,7 @@ namespace Subs.Tests
 
         private void SetupComments(List<Comment> comments)
         {
-            _commentService.Setup(x => x.GetAllCommentsForPost(It.IsAny<string>(), It.IsAny<CommentSortBy?>())).Returns(comments);
+            _commentService.Setup(x => x.GetAllCommentsForPost(It.IsAny<Guid>(), It.IsAny<CommentSortBy?>())).Returns(comments);
             _commentDao.Setup(x => x.GetCommentsByIds(It.IsAny<List<Guid>>()))
                 .Returns(new Func<List<Guid>, List<Comment>>(
                     list =>

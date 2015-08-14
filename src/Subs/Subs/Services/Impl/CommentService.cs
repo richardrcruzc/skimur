@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
 using Infrastructure.Data;
 using ServiceStack.OrmLite;
 using Subs.ReadModel;
 
-namespace Subs.Services
+namespace Subs.Services.Impl
 {
     public class CommentService : ICommentService
     {
@@ -56,14 +52,11 @@ namespace Subs.Services
             });
         }
 
-        public List<Comment> GetAllCommentsForPost(string postSlug, CommentSortBy? sortBy = null)
+        public List<Comment> GetAllCommentsForPost(Guid postId, CommentSortBy? sortBy = null)
         {
-            if (string.IsNullOrEmpty(postSlug))
-                return new List<Comment>();
-
             return _conn.Perform(conn =>
             {
-                var query = conn.From<Comment>().Where(x => x.PostSlug == postSlug);
+                var query = conn.From<Comment>().Where(x => x.PostId == postId);
 
                 if (sortBy.HasValue)
                 {
@@ -96,11 +89,11 @@ namespace Subs.Services
             });
         }
 
-        public List<Comment> GetChildrenForComment(Guid commentId, string authorName = null)
+        public List<Comment> GetChildrenForComment(Guid commentId, Guid? authorId = null)
         {
             return _conn.Perform(conn =>
             {
-                return conn.Select(!string.IsNullOrEmpty(authorName) ? conn.From<Comment>().Where(x => x.ParentId == commentId && x.AuthorUserName.ToLower() == authorName.ToLower()) : conn.From<Comment>().Where(x => x.ParentId == commentId));
+                return conn.Select(authorId.HasValue ? conn.From<Comment>().Where(x => x.ParentId == commentId && x.AuthorUserId == authorId) : conn.From<Comment>().Where(x => x.ParentId == commentId));
             });
         }
         

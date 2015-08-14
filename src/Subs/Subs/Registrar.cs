@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Skimur;
 using Subs.ReadModel;
+using Subs.ReadModel.Impl;
 using Subs.Services;
+using Subs.Services.Impl;
 
 namespace Subs
 {
@@ -13,6 +15,8 @@ namespace Subs
     {
         public void Register(SimpleInjector.Container container)
         {
+            container.RegisterSingle<ISubUserBanService, SubUserBanService>();
+            container.RegisterSingle<ISubUserBanDao, SubUserBanDao>();
             container.RegisterSingle<ISubService, SubService>();
             container.RegisterSingle<ISubDao, SubDao>();
             container.RegisterSingle<IPostService, PostService>();
@@ -26,6 +30,10 @@ namespace Subs
             container.RegisterSingle<ICommentTreeBuilder, CommentTreeBuilder>();
             container.RegisterSingle<ICommentTreeContextBuilder, CommentTreeContextBuilder>();
             container.RegisterSingle<ICommentNodeHierarchyBuilder, CommentNodeHierarchyBuilder>();
+            container.RegisterSingle<ICommentWrapper, CommentWrapper>();
+            container.RegisterSingle<IPostWrapper, PostWrapper>();
+            container.RegisterSingle<ISubWrapper, SubWrapper>();
+            container.RegisterSingle<ISubUserBanWrapper, SubUserBanWrapper>();
         }
 
         public int Order
