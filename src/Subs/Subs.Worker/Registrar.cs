@@ -16,6 +16,10 @@ namespace Subs.Worker
     {
         public void Register(Container container)
         {
+
+            container.Register<ICommandHandlerResponse<CreateFlair, CreateFlairResponse>, FlairCommandHandler>();
+            container.Register<ICommandHandlerResponse<EditFlair, EditFlairResponse>, FlairCommandHandler>();
+
             container.Register<ICommandHandlerResponse<CreateSub, CreateSubResponse>, SubHandler>();
             container.Register<ICommandHandlerResponse<EditSub, EditSubResponse>, SubHandler>();
             container.Register<ICommandHandlerResponse<CreatePost, CreatePostResponse>, SubHandler>();

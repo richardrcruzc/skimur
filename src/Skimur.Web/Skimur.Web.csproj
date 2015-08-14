@@ -123,6 +123,7 @@
     <Compile Include="Avatar\IAvatarService.cs" />
     <Compile Include="Controllers\AvatarController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\FlairController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="HtmlHelpers.cs" />
     <Compile Include="Identity\ApplicationSignInManager.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CommentModels.cs" />
     <Compile Include="Models\CommonModels.cs" />
+    <Compile Include="Models\FlairViewModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\ModerationSideBarModel.cs" />
     <Compile Include="Models\PostViewModels.cs" />

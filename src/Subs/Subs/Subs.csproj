@@ -61,10 +61,13 @@
   <ItemGroup>
     <Compile Include="Commands\CastVoteForPost.cs" />
     <Compile Include="Commands\CastVoteForComment.cs" />
+    <Compile Include="Commands\CreateFlair.cs" />
     <Compile Include="Commands\CreateComment.cs" />
     <Compile Include="Commands\CreatePost.cs" />
     <Compile Include="Commands\CreateSub.cs" />
+    <Compile Include="Commands\DeleteFlair.cs" />
     <Compile Include="Commands\DeleteComment.cs" />
+    <Compile Include="Commands\EditFlair.cs" />
     <Compile Include="Commands\EditComment.cs" />
     <Compile Include="Commands\EditSub.cs" />
     <Compile Include="Commands\SubcribeToSub.cs" />
@@ -74,10 +77,14 @@
     <Compile Include="Events\SubScriptionChanged.cs" />
     <Compile Include="Events\VoteForCommentCasted.cs" />
     <Compile Include="Events\VoteForPostCasted.cs" />
+    <Compile Include="ReadModel\FlairDao.cs" />
+    <Compile Include="ReadModel\IFlair.cs" />
     <Compile Include="Services\CommentTreeBuilder.cs" />
     <Compile Include="Services\CommentTreeContextBuilder.cs" />
     <Compile Include="Services\ICommentTreeBuilder.cs" />
     <Compile Include="Services\ICommentTreeContextBuilder.cs" />
+    <Compile Include="Services\FlairService.cs" />
+    <Compile Include="Services\IFlair.cs" />
     <Compile Include="Sorting.cs" />
     <Compile Include="Comment.cs" />
     <Compile Include="ReadModel\CommentDao.cs" />
@@ -106,6 +113,7 @@
     <Compile Include="SubAdmin.cs" />
     <Compile Include="SubScription.cs" />
     <Compile Include="Services\SubService.cs" />
+    <Compile Include="Flair.cs" />
     <Compile Include="Vote.cs" />
   </ItemGroup>
   <ItemGroup>
