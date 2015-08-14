@@ -12,8 +12,6 @@ using Microsoft.Owin.Security.DataProtection;
 using Owin;
 using SimpleInjector;
 using Skimur.Web.Public;
-using JavaScriptEngineSwitcher.Core;
-using JavaScriptEngineSwitcher.V8;
 
 // ReSharper disable once RedundantNameQualifier
 
@@ -147,6 +145,11 @@ namespace Skimur.Web.Public
             routes.MapRoute(
                 name: "Post",
                 url: "s/{subName}/post/{slug}/{title}",
+                defaults: new { controller = "Subs", action = "Post", title = UrlParameter.Optional });
+
+            routes.MapRoute(
+                name: "PostComment",
+                url: "s/{subName}/post/{slug}/{title}/c/{commentId}",
                 defaults: new { controller = "Subs", action = "Post", title = UrlParameter.Optional });
 
             routes.MapRoute(

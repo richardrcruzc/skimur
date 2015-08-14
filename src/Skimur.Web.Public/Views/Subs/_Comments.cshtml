@@ -1,4 +1,5 @@
 ﻿@using Subs
+@using Subs.ReadModel
 @model CommentListModel
 
 <div class="comments-container">
@@ -6,57 +7,7 @@
     {
         foreach (var comment in Model.Comments)
         {
-            @RenderComment(comment)
+            @Html.Partial("_Comment", comment)
         }
     }
 </div>
-
-@helper RenderComment(CommentModel comment, bool isAlternateRow = false)
-{
-    <div class="comment@(isAlternateRow ? " alternate" : null)" data-post-slug="@Model.PostSlug" data-comment-id="@comment.Id">
-        <div class="comment-voting @(comment.CurrentVote != null ? comment.CurrentVote == VoteType.Down ? "voted-down" : "voted-up" : "")">
-            <span class="up login-required"></span>
-            <span class="down login-required"></span>
-        </div>
-        <div class="comment-body">
-            <div class="comment-tagline">
-                <a href="javascript:void(0)" class="expand">[–]</a> <a href="/u/@comment.AuthorUserName" class="author">@comment.AuthorUserName</a> <span class="score">@(comment.VoteUpCount - comment.VoteDownCount) points</span> <time class="timestamp">@Html.Age(comment.DateCreated) ago</time>
-            </div>
-            <div class="comment-md">
-                @Html.Raw(comment.BodyFormatted)
-            </div>
-            <textarea class="comment-md-unformatted hidden">@Html.Raw(comment.Body)</textarea>
-            <ul class="comment-options">
-                @if (comment.CanDelete)
-                {
-                    <li>
-                        <a href="javascript:void(0);" class="delete">delete</a>
-                    </li>
-                }
-                <li>
-                    <a href="javascript:void(0);" class="reply">reply</a>
-                </li>
-                @if (comment.CanEdit)
-                {
-                    <li>
-                        <a href="javascript:void(0);" class="edit">edit</a>
-                    </li>
-                }
-                @if (comment.CanMarkSpam)
-                {
-                    <li>
-                        <a href="javascript:void(0);" class="spam">mark spam</a>
-                    </li>
-                }
-            </ul>
-            <div class="comment-staging hidden"></div>
-        </div>
-        @if (comment.Children != null && comment.Children.Count > 0)
-        {
-            foreach (var child in comment.Children)
-            {
-                @RenderComment(child, !isAlternateRow)
-            }
-        }
-    </div>
-}

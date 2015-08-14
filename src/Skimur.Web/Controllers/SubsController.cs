@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Timers;
 using System.Web;
 using System.Web.Mvc;
 using Infrastructure;
@@ -10,6 +12,7 @@ using Skimur.Web.Models;
 using Subs;
 using Subs.Commands;
 using Subs.ReadModel;
+using Subs.Services;
 
 namespace Skimur.Web.Controllers
 {
@@ -24,6 +27,8 @@ namespace Skimur.Web.Controllers
         private readonly IVoteDao _voteDao;
         private readonly ICommentDao _commentDao;
         private readonly IPermissionDao _permissionDao;
+        private readonly ICommentNodeHierarchyBuilder _commentNodeHierarchyBuilder;
+        private readonly ICommentTreeContextBuilder _commentTreeContextBuilder;
 
         public SubsController(IContextService contextService,
             ISubDao subDao,
@@ -33,7 +38,9 @@ namespace Skimur.Web.Controllers
             IPostDao postDao,
             IVoteDao voteDao,
             ICommentDao commentDao,
-            IPermissionDao permissionDao)
+            IPermissionDao permissionDao,
+            ICommentNodeHierarchyBuilder commentNodeHierarchyBuilder,
+            ICommentTreeContextBuilder commentTreeContextBuilder)
         {
             _contextService = contextService;
             _subDao = subDao;
@@ -44,6 +51,8 @@ namespace Skimur.Web.Controllers
             _voteDao = voteDao;
             _commentDao = commentDao;
             _permissionDao = permissionDao;
+            _commentNodeHierarchyBuilder = commentNodeHierarchyBuilder;
+            _commentTreeContextBuilder = commentTreeContextBuilder;
         }
 
         public ActionResult Index(string query)
@@ -145,7 +154,7 @@ namespace Skimur.Web.Controllers
             return View(model);
         }
 
-        public ActionResult Post(string subName, string slug, CommentSortBy commentsSort = CommentSortBy.Best)
+        public ActionResult Post(string subName, string slug, CommentSortBy commentsSort = CommentSortBy.Best, Guid? commentId = null)
         {
             var post = _postDao.GetPostBySlug(slug);
 
@@ -161,24 +170,17 @@ namespace Skimur.Web.Controllers
                 throw new HttpException(404, "no post found");
 
             var model = new PostDetailsModel();
+
             model.Post = MapPost(post);
             model.Sub = MapSub(sub);
             model.Comments = new CommentListModel();
             model.Comments.SortBy = commentsSort;
             model.Comments.PostSlug = model.Post.Slug;
 
-            var comments = _commentDao.GetAllCommentsForPost(post.Slug, commentsSort).Select(MapComment).ToList();
-
-            Func<Guid?, List<CommentModel>> buildComments = null;
-            buildComments = parentCommentId =>
-            {
-                var children = comments.Where(x => parentCommentId.HasValue ? x.ParentId == parentCommentId.Value : x.ParentId == null).ToList();
-                foreach (var comment in children)
-                    comment.Children = buildComments(comment.Id);
-                return children;
-            };
-
-            model.Comments.Comments.AddRange(buildComments(null));
+            var commentTree = _commentDao.GetCommentTree(model.Post.Slug);
+            var commentTreeSorter = _commentDao.GetCommentTreeSorter(model.Post.Slug, model.Comments.SortBy);
+            var commentTreeContext = _commentTreeContextBuilder.Build(commentTree, commentTreeSorter, comment:commentId, limit:100, maxDepth:5);
+            model.Comments.Comments = _commentNodeHierarchyBuilder.Build(commentTree, commentTreeContext, _userContext.CurrentUser);
 
             return View(model);
         }
@@ -448,18 +450,16 @@ namespace Skimur.Web.Controllers
                     });
                 }
 
+                if (!response.CommentId.HasValue)
+                    throw new Exception("No error was given, which indicates success, but no comment id was returned.");
+
+                var node = _commentNodeHierarchyBuilder.WrapComments(new List<Guid> {response.CommentId.Value}, _userContext.CurrentUser);
+
                 return Json(new
                 {
                     success = true,
                     commentId = response.CommentId,
-                    dateCreated,
-                    dateCreatedAgo = TimeHelper.Age(Common.CurrentTime() - dateCreated) + " ago",
-                    parentId = model.ParentId,
-                    author = _userContext.CurrentUser.UserName,
-                    postSlug = model.PostSlug,
-                    body = response.Body,
-                    bodyFormatted = response.FormattedBody,
-                    score = 1
+                    html = RenderView("_Comment", node[response.CommentId.Value])
                 });
             }
             catch (Exception ex)
@@ -487,13 +487,14 @@ namespace Skimur.Web.Controllers
 
             try
             {
+                Debug.WriteLine(DateTime.Now.ToLongTimeString() + ":Sending command..");
                 var response = _commandBus.Send<EditComment, EditCommentResponse>(new EditComment
                 {
                     DateEdited = Common.CurrentTime(),
                     CommentId = model.CommentId,
                     Body = model.Body
                 });
-
+                Debug.WriteLine(DateTime.Now.ToLongTimeString() + ":Sent command..");
                 if (!string.IsNullOrEmpty(response.Error))
                 {
                     return Json(new
@@ -503,12 +504,24 @@ namespace Skimur.Web.Controllers
                     });
                 }
 
+                Debug.WriteLine(DateTime.Now.ToLongTimeString() + ":Wrapping command..");
+                var node = _commentNodeHierarchyBuilder.WrapComments(new List<Guid> {model.CommentId},
+                    _userContext.CurrentUser);
+                Debug.WriteLine(DateTime.Now.ToLongTimeString() + ":Wrapped command..");
+
+
+                Debug.WriteLine(DateTime.Now.ToLongTimeString() + ":Rendering html..");
+                var html = RenderView("_CommentBody", node[model.CommentId]);
+                Debug.WriteLine(DateTime.Now.ToLongTimeString() + ":Rendered html..");
+
+
                 return Json(new
                 {
                     success = true,
                     commentId = model.CommentId,
-                    body = response.Body,
-                    bodyFormatted = response.FormattedBody
+                    // we don't render the whole comment, just the body.
+                    // this is because we want to leave the children in-tact on the ui
+                    html = html
                 });
             }
             catch (Exception ex)
@@ -791,23 +804,6 @@ namespace Skimur.Web.Controllers
             if (sub == null) return null;
             var result = _mapper.Map<Sub, SubModel>(sub);
             result.IsSubscribed = _contextService.IsSubcribedToSub(sub.Name);
-            return result;
-        }
-
-        private CommentModel MapComment(Comment comment)
-        {
-            if (comment == null) return null;
-            var result = _mapper.Map<Comment, CommentModel>(comment);
-
-            if (_userContext.CurrentUser != null)
-            {
-                result.CanEdit = _userContext.CurrentUser.UserName == comment.AuthorUserName;
-                result.CanDelete = _permissionDao.CanUserDeleteComment(_userContext.CurrentUser.UserName, comment);
-                result.CanMarkSpam = _permissionDao.CanUserMarkCommentAsSpam(_userContext.CurrentUser.UserName, comment);
-                if (_userContext.CurrentUser != null)
-                    result.CurrentVote = _voteDao.GetVoteForUserOnComment(_userContext.CurrentUser.UserName, comment.Id);
-            }
-        
             return result;
         }
     }
