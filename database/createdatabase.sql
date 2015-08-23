@@ -197,7 +197,7 @@ CREATE TABLE flairs
 );
 
 
-CREATE TABLE flairSettings
+CREATE TABLE flair_Settings
 (
 	id uuid NOT NULL,
 	User_Name text,

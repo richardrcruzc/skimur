@@ -1,23 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Skimur.Web.Models
 {
     public class FlairSettingsViewModel
     {
         public virtual Guid Id { get; set; }
+        [DisplayName("UserName")]
         public string UserName { get; set; }
-        public bool enable_user_subreddit { get; set; }
-        public bool allow_user_assign_own { get; set; }
-        public bool allow_submitter_assign_own_link { get; set; }
-        public bool user_flair_possition { get; set; }
-        public bool link_possition { get; set; }
+        [DisplayName("Enable User Flair in this Subreddit")]
+        public bool EnableUserSubreddit { get; set; }
+        [DisplayName("Allow Users to Assign their Own Flair")]
+        public bool AllowUserAssignOwn { get; set; }
+        [DisplayName("Allow Submitters to Assign their Own Link Flair")]
+        public bool AllowSubmitterAssignOwnLink { get; set; }
+        [DisplayName("User Flair Possition")]
+        public int UserFlairPossition { get; set; }
+        [DisplayName("Link Flair Possition")]
+        public int LinkPossition { get; set; }
 
         public bool Deleted { get; set; }
 
+        [DisplayName("Link Flair Possition")]
+        [Required(ErrorMessage = "select one item")]
+        public LinkFlairPossition LinkFlairPossition
+        {
+            get { return (LinkFlairPossition)LinkPossition; }
+            set { LinkPossition = (int)value; }
+        }
+
+        [Required(ErrorMessage = "select one item")]
+        [DisplayName("User Flair Possition")]
+        public UserPossition Possition
+        {
+            get { return (UserPossition)UserFlairPossition; }
+            set { UserFlairPossition = (int)value; }
+        }
+    }
+
+    public enum UserPossition
+    {
+        Left = 1,
+        Right = 0
+    }
+    public enum LinkFlairPossition
+    {
+        None = 2,
+        Left = 1,
+        Right = 0
     }
 
 
@@ -34,46 +66,8 @@ namespace Skimur.Web.Models
     }
 
         }
-        public class CreateFlairViewModel
-    {
-
-        public string Text { get; set; }
-
-        public string CssClass { get; set; }
-
-        public bool TextEditable { get; set; }
-
-        public int Type { get; set; }
-        public FlairType FlairType
-        {
-            get { return (FlairType)Type; }
-            set { Type = (int)value; }
-        }
-    }
+     
    
-    public class EditFlairViewModel
-    {
-        public virtual Guid Id { get; set; }
-
-        public string Text { get; set; }
-
-        public string CssClass { get; set; }
-
-        public bool TextEditable { get; set; }
-
-        public int Type { get; set; }
-
-        public string UserName { get; set; }
-
-        public bool Deleted { get; set; }
-         
-
-        public FlairType FlairType
-        {
-            get { return (FlairType)Type; }
-            set { Type = (int)value; }
-        }
-    }
     public class ListFlairViewModel
     {
         public virtual Guid Id { get; set; }
@@ -89,31 +83,7 @@ namespace Skimur.Web.Models
         public bool Deleted { get; set; }
          
     }
-    public class  FlairViewModel
-    {
-        public virtual Guid Id { get; set; }
-
-        public string Text { get; set; }
-
-        public string CssClass { get; set; }
-
-        public bool TextEditable { get; set; }
-
-        public int Type { get; set; }
-
-        public string UserName { get; set; }
-
-        public bool Deleted { get; set; }
-
-       
-
-
-        public FlairType FlairType
-        {
-            get { return (FlairType)Type; }
-            set { Type = (int)value; }
-        }
-    }
+  
     public enum FlairType
     {
         User = 1,

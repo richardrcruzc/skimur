@@ -97,9 +97,7 @@
         {
             @Html.Action("ModerationSideBar", new { subId = Model.Sub.Sub.Id })
         }
-        
-        <a href="javascript:void(0);" onclick="return skimurui.flair.openFlairBox(this);">Change flair</a>
-        @Html.Partial("~/Views/Flair/_FlairsModal.cshtml", new ListFlairViewModel())    
+        @Html.ActionLink("Change flair", "Index", "Flair")
         
     </div>
 </div>

@@ -1,0 +1,146 @@
+﻿@model FlairSettingsViewModel
+ @using (Html.BeginForm("CreateSave", "FlairSetting", FormMethod.Post, new { @class = "form form-createpost", role = "form" }))
+ {
+    @Html.AntiForgeryToken()
+    <div class="row">
+ 
+            <div class="col-sm-3 control-label">
+                <p class="bg-primary">
+                    Flair Settings
+                    </p>
+</div>           
+    </div>
+
+ <div class="bg-info">
+                      
+        <div class="row">
+            <div class="col-sm-3 control-label">
+                Flair Options
+            </div>
+        </div>
+    
+
+
+    <div class="row">
+        <div class="col-sm-1">
+            @Html.EditorFor(model => model.EnableUserSubreddit, new { @class = "form-control" })
+        </div>
+        <div class="col-sm-10">
+            @Html.LabelFor(model => model.EnableUserSubreddit, new { @class = "form-label" })
+        </div>
+    </div>        
+    <div class="row">
+        <div class="col-sm-1">
+            @Html.EditorFor(model => model.AllowUserAssignOwn, new { @class = "form-control" })
+        </div>
+        <div class="col-sm-10">
+            @Html.LabelFor(model => model.AllowUserAssignOwn, new { @class = "form-label" })
+        </div>
+    </div>      
+    <div class="row">
+        <div class="col-sm-1">
+            @Html.EditorFor(model => model.AllowSubmitterAssignOwnLink, new { @class = "form-control" })
+        </div>
+        <div class="col-sm-10">
+            @Html.LabelFor(model => model.AllowSubmitterAssignOwnLink, new { @class = "form-label" })
+        </div>
+    </div>
+</div>
+<div class="row">
+    <p></p>
+</div>
+    <div class="bg-info">
+
+        
+            <div class="row">
+                <div class="col-sm-3 control-label">
+
+                    User Flair Position
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-1">
+                    @Html.RadioButtonFor(x => x.Possition, UserPossition.Left)
+                </div>
+                <div class="col-sm-1">
+                    Left
+                </div>
+                <div class="col-sm-8">
+                    position flair to the Left of the username
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-1">
+                    @Html.RadioButtonFor(x => x.Possition, UserPossition.Right)
+                </div>
+                <div class="col-sm-1">
+                    Right
+                </div>
+                <div class="col-sm-8">
+                    position flair to the Right of the username
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <p></p>
+        </div>
+
+        <div class="bg-info">
+          
+                <div class="row">
+                    <div class="col-sm-3 control-label">
+                        @Html.LabelFor(model => model.Possition)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        @Html.RadioButtonFor(x => x.LinkFlairPossition, LinkFlairPossition.None)
+                    </div>
+                    <div class="col-sm-1">
+                        None
+                    </div>
+                    <div class="col-sm-8">
+                        Dont show link flair
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        @Html.RadioButtonFor(x => x.LinkFlairPossition, LinkFlairPossition.Left)
+                    </div>
+                    <div class="col-sm-1">
+                        Left
+                    </div>
+                    <div class="col-sm-8">
+                        position flair to the Right of the Link
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-sm-1">
+                        @Html.RadioButtonFor(x => x.LinkFlairPossition, LinkFlairPossition.Right)
+                    </div>
+                    <div class="col-sm-1">
+                        Right
+                    </div>
+                    <div class="col-sm-8">
+                        position flair to the Right of the Link
+                    </div>
+                </div>
+            </div>
+   <div class="row">
+    <p></p>
+    <p></p>
+</div>    
+    <div class="row">
+        <div class="col-sm-3 control-label">
+
+            <button type="submit" class="btn btn-success" name="SaveUserFlair">Save Options</button>
+        </div>
+    </div>
+<div class="row">
+    <p></p>
+    <p></p>
+</div>
+
+ }

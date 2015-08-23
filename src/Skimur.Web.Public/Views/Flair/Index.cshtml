@@ -8,15 +8,8 @@
 <div class="row">
 
     <div class="col-lg-9 col-sm-8">
-
-
-@using (Html.BeginForm("CreateSaveSettings", "Flair", FormMethod.Post, new { @class = "form form-createpost", role = "form" }))
-{
-    @Html.AntiForgeryToken()
-
-
-}
-
+                     
+         @{Html.RenderAction("CreateSave", "FlairSetting", null);}
     </div>
 </div>
 
@@ -154,7 +147,7 @@
                                                     @Html.EditorFor(model => model.LinkFlair[j].CssClass, new { @class = "form-control" })
                                                 </div>
                                                 <div class="col-md-1">
-                                                    <button type="button" class="btn btn-danger  delete-linkflair-row" data-userflair-id="@Model.LinkFlair[j].Id" title="Delete row">remove</button>
+                                                    <button type="button" class="btn btn-danger  delete-linkflair-row" data-linkflair-id="@Model.LinkFlair[j].Id" title="Delete row">remove</button>
 
                                                 </div>
                                             </div>
@@ -185,7 +178,7 @@
             <script type="text/javascript">
 
                 $(".delete-linkflair-row").click(function (e) {
-                    var flairId = $(this).attr("data-userflair-id");
+                    var flairId = $(this).attr("data-linkflair-id");
                     skimurui.flair.deleteFlairRow(flairId);  
                     window.location.href = '@Url.Action("index", "flair",new { id = "linkflair" })';    
                 });

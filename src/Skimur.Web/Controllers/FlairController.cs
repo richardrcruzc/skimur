@@ -80,71 +80,24 @@ namespace Skimur.Web.Controllers
 
             return View(model);
         }
-        [Authorize]
-        [HttpPost] 
-        public ActionResult InsertFlair(ListFlairViewModel model)
-        {
-            try
-            {
-                var userName = _userContext.CurrentUser.UserName;
-                var dateCreated = Common.CurrentTime();
-                var flair = new Flair();
-                flair.Id = Guid.NewGuid();
-                flair.Text = model.Text;
-                flair.CssClass = model.CssClass;
-                flair.Type = model.Type;
-                flair.Deleted = false;
-                flair.UserName = userName;
-                flair.TextEditable = model.TextEditable;
-
-                var response = _commandBus.Send<CreateFlair, CreateFlairResponse>(new CreateFlair
-                {
-                    Text = model.Text,
-                    CssClass = model.CssClass,
-                    Type = model.Type,
-                    Deleted = false,
-                    UserName = userName,
-                    TextEditable = model.TextEditable,
-            });
-
-                if (!string.IsNullOrEmpty(response.Error))
-                { 
-                    return Json(new
-                    {
-                        success = false,
-                        error = response.Error
-                    });
-                }
-
-
-                    //  _flairService.InsertFlair(flair);
-
-                    return Json(new
-                {
-                    success = true,
-                    error = ""
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new
-                {
-                    success = false,
-                    error = ex.Message, 
-                    // ModelState.Values.SelectMany(v => v.Errors),
-                });
-            }
-
-        }
+        
         public ActionResult DeleteFlair(string id)
         {
             try
             {
+                var dateDeleted = Common.CurrentTime();
                 var userName = _userContext.CurrentUser.UserName;
-                var dateCreated = Common.CurrentTime();
-                var flair = _flairService.GetFlairById(new Guid(id));
-                flair.Deleted = true;
-                
+                var delete = new DeleteFlair();
+                delete.FlairId = new Guid(id);
+                delete.UserName = userName;
+                delete.DateDeleted = dateDeleted;
+                var response = _commandBus.Send<DeleteFlair, DeleteFlairResponse>(delete);
+                if(!string.IsNullOrEmpty(response.Error))
+                    return Json(new
+                    {
+                        success = false,
+                        error = response.Error,
+                    });
                 return Json(new
                 {
                     success = true,
@@ -165,96 +118,13 @@ namespace Skimur.Web.Controllers
 
         }
 
-        public ActionResult GetAllFlairByUserAndType(int type)
-        {
-            string user = User.Identity.Name;
-            var allFlairs = _flairService.GetAllFlairsForUser(user)
-                .Select(x =>
-                {
-                    var model = _mapper.Map<Flair, ListFlairViewModel>(x);
-                    return model;
-                }
-            ).Where(x=>x.Type== type).ToList();
-
-            return Json(new
-            {
-                success = true,
-                html = RenderView("~/Views/Flair/_List.cshtml", allFlairs)
-            });
-        }
-
-
-        public ActionResult GetFlairById(string id)
-        {
-            string user = User.Identity.Name;
-            var flair = _flairService.GetFlairById(new Guid(id));
-            var json = new
-            {
-                success = true,
-                usename =   flair.UserName  ,
-                text = flair.Text,
-                cssclass = flair.CssClass,
-                userid= flair.Id
-            };
-
-            return Json(json);
-        }
-        public ActionResult GetAllFlairByUser()
-        {
-            string user = User.Identity.Name; 
-            var allFlairs = _flairService.GetAllFlairsForUser(user)
-                .Select(x =>
-                {
-                    var model = _mapper.Map<Flair, ListFlairViewModel>(x);
-                    return model;
-                }
-            ).ToList();
-             
-            return Json(new
-            {
-                success=true , html = RenderView("~/Views/Flair/_FlairsList.cshtml", allFlairs)
-            });
-        }
-
-        public ActionResult backIndex()
-        {
-            string user = User.Identity.Name;
-           // var allFlair = _flairService.GetAllFlairsForUser(user).ToList();
-            var allFlairs = _flairService.GetAllFlairsForUser(user)
-                .Select(x =>
-               {
-                   var model = _mapper.Map<Flair, ListFlairViewModel>(x);
-                   return model;
-               }
-            ).ToList();
-
-              return View("~/Views/Flair/_FlairsList.cshtml", allFlairs);
-            //return Json(new
-            //{
-            //    html = RenderView("_FlairsList", allFlairs)
-            //},JsonRequestBehavior.AllowGet);
-        }
-
-        [Authorize]
-        public ActionResult Create()
-        {
-            return View(new CreateFlairViewModel());
-        }
-
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult CreateByType(ListFlairViewModel model)
-        {
-            return View(model);
-        }
+       
+       
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult CreateSave(FlairIndexModel model, string SaveUserFlair, string SaveLinkFlair)
-        {
-
-
+        { 
             if (ModelState.IsValid)
             {
                 var userName = _userContext.CurrentUser.UserName;
@@ -329,85 +199,7 @@ namespace Skimur.Web.Controllers
 
              
         }
-
-        public ActionResult Edit(string id)
-        { 
-
-            if (string.IsNullOrEmpty(id))
-                return Redirect("Index");
-
-            var flair = _flairService.GetFlairById(new Guid(id));
-
-            var model = _mapper.Map<Flair, EditFlairViewModel>(flair); 
-
-            return View(model);
-        }
-
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(string id, EditFlairViewModel model)
-        { 
-
-            if (ModelState.IsValid)
-            {
-                var flair = _flairService.GetFlairById(new Guid(id));
-
-                var userName = _userContext.CurrentUser.UserName;
-                var dateCreated = Common.CurrentTime();
          
-                flair.Text = model.CssClass;
-                flair.CssClass = model.CssClass;
-                flair.Type = model.Type;
-              
-                flair.Deleted = false;
-                
-                flair.TextEditable = model.TextEditable;
-                flair.UserName = userName;
-
-               
-                return Redirect("Index");
-            }
-
-            // todo: success message
-
-
-            return View(model);
-        }
-
-        public ActionResult Delete(Guid id)
-        {
-            var flair = _flairService.GetFlairById(id);
-            var model = _mapper.Map<Flair, EditFlairViewModel>(flair);
-
-            return View(model);
-        }
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(EditFlairViewModel model)
-        {  
-
-            try
-            {
-                var userName = _userContext.CurrentUser.UserName;
-                var dateCreated = Common.CurrentTime();
-                var flair = _flairService.GetFlairById(model.Id);
-                flair.Deleted = true;
-               
-                flair.UserName = userName;
-
-               
-                return Redirect("Index");
-            }
-            catch (Exception ex)
-            {
-                // TODO: log
-                
-            }
-            return View();
-        }
-
        
     }
 }

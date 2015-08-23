@@ -334,6 +334,7 @@
     <Content Include="Views\Flair\Index.cshtml" />
     <Content Include="Views\Flair\_List.cshtml" />
     <Content Include="Views\Flair\_List - Copy.cshtml" />
+    <Content Include="Views\Flair\_FlairsSetting.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />

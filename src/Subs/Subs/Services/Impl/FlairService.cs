@@ -33,9 +33,12 @@ namespace Subs.Services.Impl
         }
         public void DeleteFlair(Guid id)
         {
-           var flair= GetFlairById(id);
-            flair.Deleted = true;
-            UpdateFlair(flair);
+           //var flair= GetFlairById(id);
+           // flair.Deleted = true;
+           // UpdateFlair(flair);
+
+            _conn.Perform(conn => conn.DeleteById<Flair>(id));
+
         }
 
         public Flair GetFlairById(Guid id)
