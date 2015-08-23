@@ -224,6 +224,131 @@
         });
     };
 
+    var GetAllFlairByUserAndType = function (type, callback) {
+
+        // TODO
+        $.ajax({
+            type: "POST",
+            url: "/Flair/GetAllFlairByUserAndType",
+            data: { type: type },
+            dataType: "json",
+            success: function (data) {
+                if (callback)
+                    callback(data);
+            },
+            error: function () {
+                if (callback)
+                    callback({ success: false, error: "There was an error processing your request." });
+            }
+        });
+    };
+    var getFlairAll = function (callback) {
+        
+        // TODO
+        $.ajax({
+            type: "POST",
+            url: "/Flair/GetAllFlairByUser",
+            data: {},
+            dataType: "json",
+            success: function (data) {
+                if (callback)
+                    callback(data);
+            },
+            error: function () {
+                if (callback)
+                    callback({ success: false, error: "There was an error processing your request." });
+            }
+        });
+    };
+
+    var getFlairById = function (flairId, callback) {
+        // TODO
+        $.ajax({
+            type: "POST",
+            url: "/Flair/GetFlairById",
+            data: { id: flairId },
+            dataType: "json",
+            success: function (data) { 
+                if (callback)
+                    callback(data);
+            },
+            error: function () {
+                if (callback)
+                    callback({ success: false, error: "There was an error processing your request." });
+            }
+        });
+    };
+    var insertFlair = function (text, cssClass, textEditable, type, callback) {       
+        // TODO
+        $.ajax({
+            type: "POST",
+            url: "/Flair/InsertFlair",
+            data: { Text: text, CssClass: cssClass, TextEditable: textEditable, Type: type },
+            dataType: "json",
+            success: function (data) {
+                if (callback)
+                    callback(data);
+            },
+            error: function () {
+                if (callback)
+                    callback({ success: false, error: "There was an error processing your request." });
+            }
+        });
+    };
+    var removeFlairById = function (flairId, callback) {
+        // TODO
+        $.ajax({
+            type: "POST",
+            url: "/Flair/DeleteFlair",
+            data: { id: flairId },
+            dataType: "json",
+            success: function (data) {
+                if (callback)
+                    callback(data);
+            },
+            error: function () {
+                if (callback)
+                    callback({ success: false, error: "There was an error processing your request." });
+            }
+        });
+    };
+    
+    var getFlairForLink  = function (userName, callback) { 
+        // TODO
+        //$.ajax({
+        //    type: "POST",
+        //    url: "/morecomments",
+        //    data: { postId: postId, sort: sort, children: children, depth: depth },
+        //    dataType: "json",
+        //    success: function (data) {
+        //        if (callback)
+        //            callback(data);
+        //    },
+        //    error: function () {
+        //        if (callback)
+        //            callback({ success: false, error: "There was an error processing your request." });
+        //    }
+        //});
+    };
+
+    var getFlairForSub = function (userName, callback) { 
+        // TODO
+        //$.ajax({
+        //    type: "POST",
+        //    url: "/morecomments",
+        //    data: { postId: postId, sort: sort, children: children, depth: depth },
+        //    dataType: "json",
+        //    success: function (data) {
+        //        if (callback)
+        //            callback(data);
+        //    },
+        //    error: function () {
+        //        if (callback)
+        //            callback({ success: false, error: "There was an error processing your request." });
+        //    }
+        //});
+    };
+
     return {
         subscribe: subscribe,
         unsubcribe: unsubcribe,
@@ -242,7 +367,14 @@
         confirmDelete: confirmDelete,
         moreComments: moreComments,
         popupError: popupError,
-        popupSuccess : popupSuccess
+        popupSuccess: popupSuccess,
+        getFlairForSub: getFlairForSub,
+        getFlairForLink: getFlairForLink,
+        getFlairAll: getFlairAll,
+        getFlairById: getFlairById,
+        removeFlairById: removeFlairById,
+        GetAllFlairByUserAndType: GetAllFlairByUserAndType,
+        insertFlair: insertFlair
     };
 
 })();

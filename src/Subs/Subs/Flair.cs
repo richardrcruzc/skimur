@@ -1,11 +1,11 @@
-﻿
+﻿using Infrastructure;
 using ServiceStack.DataAnnotations;
 using System;
 
 namespace Subs
 {
     [Alias("Flairs")]
-    public class Flair
+    public class Flair : IAggregateRoot
     {
         public virtual Guid Id { get; set; }
 
@@ -15,17 +15,11 @@ namespace Subs
 
         public bool TextEditable { get; set; }
 
-        public int Type { get; set; }
-
+        public int Type { get; set; } 
         public string UserName { get; set; }
 
         public bool Deleted { get; set; }
-
-        public DateTime DateCreated { get; set; }
-
-        public DateTime? DateEdited { get; set; }    
-
-        public string IpAddress { get; set; }
+         
 
         [Ignore]
         public FlairType FlairType
@@ -33,7 +27,7 @@ namespace Subs
             get { return (FlairType)Type; }
             set { Type = (int)value; }
         }
-    }
+    }    
 
     public enum FlairType
     {

@@ -1,0 +1,227 @@
+﻿@model FlairIndexModel
+
+@{
+    ViewBag.Title = "Flair";
+}
+
+
+<div class="row">
+
+    <div class="col-lg-9 col-sm-8">
+
+
+@using (Html.BeginForm("CreateSaveSettings", "Flair", FormMethod.Post, new { @class = "form form-createpost", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+
+
+}
+
+    </div>
+</div>
+
+
+        @using (Html.BeginForm("CreateSave", "Flair", FormMethod.Post, new { @class = "form form-createpost", role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="row">
+
+                <div class="col-lg-9 col-sm-8">
+
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li id="GrantFlair-tab" role="presentation" class="@(Model.ActiveTab == "GrantFlair" ? "active" : "")"><a href="#GrantFlair" aria-controls="home" role="tab" data-toggle="tab">Grant Flair</a></li>
+                        <li id="UserFlair-tab" role="presentation" class="@(Model.ActiveTab == "userflair" ? "active" : "")"><a href="#UserFlair" aria-controls="profile" role="tab" data-toggle="tab">User Flair Templates</a></li>
+                        <li id="LinkFlair-tab" role="presentation" class="@(Model.ActiveTab == "linkflair" ? "active" : "")"><a href="#LinkFlair" aria-controls="profile" role="tab" data-toggle="tab">Link Flair Templates</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane @(Model.ActiveTab == "GrantFlair" ? "active" : "")" id="GrantFlair">
+                            <div class="form-group">
+                                <div class="col-md-7">
+                                    <label class="control-label">Jump to user (or add)</label>
+                                </div>
+                                <div class="col-md-7">
+
+                                    <input class="form-control col-md-7" />
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="submit" class="btn btn-primary">Go</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane @(Model.ActiveTab == "userflair" ? "active" : "")" id="UserFlair">
+                            <div class="form-group">
+                                <div class="divUserFlair">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                        </div>
+                                        <div class="col-sm-2">
+                                            User can Edit?
+                                        </div>
+                                        <div class="col-md-3">
+                                            Flair Text
+                                        </div>
+                                        <div class="col-md-3">
+                                            Css Class
+                                        </div>
+                                        <div class="col-md-2">
+                                        </div>
+
+                                    </div>
+                                    @for (var j = 0; j < Model.UserFlair.Count; j++)
+                                    {
+                                        @Html.HiddenFor(model => model.UserFlair[j].Id)
+                                        @Html.HiddenFor(model => model.UserFlair[j].Type)
+                                        <div class="form-group">
+
+
+                                            <div class="col-md-3">
+                                                @Model.UserFlair[j].UserName <a href="#">  @Model.UserFlair[j].Text </a>
+                                            </div>
+                                            <div class="col-md-2">
+                                                @Html.EditorFor(model => model.UserFlair[j].TextEditable, new { @class = "form-control" })
+                                            </div>
+                                            <div class="col-md-3">
+                                                @Html.EditorFor(model => model.UserFlair[j].Text, new { @class = "form-control" })
+                                            </div>
+                                            <div class="col-md-3">
+                                                @Html.EditorFor(model => model.UserFlair[j].CssClass, new { @class = "form-control" })
+                                            </div>
+                                            <div class="col-md-1">
+                                                <button type="button" class="btn btn-danger delete-userflair-row" data-userflair-id="@Model.UserFlair[j].Id" title="Delete row">remove</button>
+
+                                            </div>
+                                            @* <div class="select-flair" data-flair-id="@Model[j].Id" style="cursor: pointer;" onclick="return skimurui.flair.editFlairInBox(this);">*@
+
+
+                                        </div>
+
+                                    }
+
+
+                                    <div class="row">
+                                        @*<div class="col-md-2">
+                                            <button type="button" class="btn btn-primary  new-userflair-row" title="New row">new row</button>
+                                        </div>*@
+                                        <div class="col-md-2">
+
+                                            <button type="submit" class="btn btn-success" name="SaveUserFlair">Save</button>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane @(Model.ActiveTab == "linkflair" ? "active" : "")" id="LinkFlair">
+                            <div class="form-group">
+                                <div class="divLinkFlair">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                        </div>
+                                        <div class="col-sm-2">
+                                            User can Edit?
+                                        </div>
+                                        <div class="col-md-3">
+                                            Flair Text
+                                        </div>
+                                        <div class="col-md-3">
+                                            Css Class
+                                        </div>
+                                        <div class="col-md-2">
+                                        </div>
+
+                                    </div>
+                                    @for (var j = 0; j < Model.LinkFlair.Count; j++)
+                                    {
+                                        @Html.HiddenFor(model => model.LinkFlair[j].Id)
+                                        @Html.HiddenFor(model => model.LinkFlair[j].Type)
+                                        <div class="form-group">
+                                            <div class="row">
+
+                                                <div class="col-md-3">
+                                                    @Model.LinkFlair[j].UserName <a href="#">  @Model.LinkFlair[j].Text </a>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    @Html.EditorFor(model => model.LinkFlair[j].TextEditable, new { @class = "form-control" })
+                                                </div>
+                                                <div class="col-md-3">
+                                                    @Html.EditorFor(model => model.LinkFlair[j].Text, new { @class = "form-control" })
+                                                </div>
+                                                <div class="col-md-3">
+                                                    @Html.EditorFor(model => model.LinkFlair[j].CssClass, new { @class = "form-control" })
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <button type="button" class="btn btn-danger  delete-linkflair-row" data-userflair-id="@Model.LinkFlair[j].Id" title="Delete row">remove</button>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="row">
+                                        @*<div class="col-md-2">
+                                            <button type="button" class="btn btn-primary  new-linkflair-row" title="New row">new row</button>
+                                        </div>*@
+                                        <div class="col-md-2">
+
+                                            <button type="submit" class="btn btn-success"  name="SaveLinkFlair">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+        }
+        @section scripts
+{
+            <script type="text/javascript">
+
+                $(".delete-linkflair-row").click(function (e) {
+                    var flairId = $(this).attr("data-userflair-id");
+                    skimurui.flair.deleteFlairRow(flairId);  
+                    window.location.href = '@Url.Action("index", "flair",new { id = "linkflair" })';    
+                });
+
+                $(".delete-userflair-row").click(function (e) {
+                    var flairId = $(this).attr("data-userflair-id");
+                    skimurui.flair.deleteFlairRow(flairId);   
+                    window.location.href = '@Url.Action("index", "flair",new { id = "userflair" })';
+});
+
+
+                @*$(function () {
+            $("#linkpost-tab").click(function (e) {
+                $("#@Html.IdFor(m => m.PostType)").val("@Subs.PostType.Link");
+            });
+            $("#textpost-tab").click(function (e) {
+                $("#@Html.IdFor(m => m.PostType)").val("@Subs.PostType.Text");
+            });
+        });*@
+
+
+
+                $(function () {
+                    $("#subQuerySearch").click(function (e) {
+                        e.preventDefault();
+                        var query = $("#subQuery").val();
+                        if (query) {
+                            window.location = "@Url.Subs()?query=" + query;
+                        } else {
+                            window.location = "@Url.Subs()";
+                        }
+                    });
+                    $("#subQuery").enterKey(function (e) {
+                        e.preventDefault();
+                        $("#subQuerySearch").click();
+                    });
+                });
+            </script>
+        }

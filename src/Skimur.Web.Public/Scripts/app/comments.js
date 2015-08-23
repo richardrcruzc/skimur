@@ -184,7 +184,7 @@
 
     var deleteComment = function (element) {
         var $comment = getComment(element);
-
+       
         skimur.confirmDelete(function (result) {
             if (result.confirmed) {
                 skimur.deleteComment($comment.data("comment-id"), null, function (deleteResult) {

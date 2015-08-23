@@ -5,6 +5,7 @@ using SimpleInjector;
 using SimpleInjector.Integration.Web.Mvc;
 using Skimur.Web.Avatar;
 using Skimur.Web.Identity;
+using Subs.Services;
 
 namespace Skimur.Web
 {
@@ -19,7 +20,7 @@ namespace Skimur.Web
 
             container.RegisterPerWebRequest<ApplicationSignInManager>();
             container.RegisterPerWebRequest<IUserContext, UserContext>();
-            container.RegisterPerWebRequest<IContextService, ContextService>();
+            container.RegisterPerWebRequest<IContextService, ContextService>(); 
 
             container.RegisterMvcIntegratedFilterProvider();
 

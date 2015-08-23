@@ -34,6 +34,7 @@ namespace Subs
             container.RegisterSingle<IPostWrapper, PostWrapper>();
             container.RegisterSingle<ISubWrapper, SubWrapper>();
             container.RegisterSingle<ISubUserBanWrapper, SubUserBanWrapper>();
+            container.RegisterSingle<IFlairService, FlairService>();
         }
 
         public int Order

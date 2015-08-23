@@ -64,8 +64,7 @@ namespace Subs.Worker
                     Type = command.Type,
                     TextEditable = command.TextEditable,
                     Deleted = false,
-                    DateCreated = command.DateCreated,
-                    IpAddress = command.IpAddress,
+                   
 
                 };
                 _flairService.InsertFlair(flair);
@@ -119,8 +118,7 @@ namespace Subs.Worker
                 flair.Type = command.Type;
                 flair.TextEditable = command.TextEditable;
                 flair.Deleted = command.Deleted;
-                flair.DateEdited = command.DateEdited;
-                flair.IpAddress = command.IpAddress;
+                
                 
                 _flairService.UpdateFlair(flair);
 
@@ -159,7 +157,7 @@ namespace Subs.Worker
                 } 
                
                 flair.Deleted = true;
-                flair.DateEdited = command.DateDeleted;                
+                
 
                 _flairService.UpdateFlair(flair);
 

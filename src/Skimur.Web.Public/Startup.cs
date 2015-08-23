@@ -212,6 +212,13 @@ namespace Skimur.Web.Public
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
                 );
+
+
+            routes.MapRoute(
+               name: "FlairsByUser",
+               url: "FlairsByUser",
+               defaults: new { controller = "Flair", action = "GetAllFlairByUser" });
+
         }
 
         public void RegisterGlobalFilters(GlobalFilterCollection filters)
@@ -238,7 +245,8 @@ namespace Skimur.Web.Public
                 "~/Scripts/app/misc.js",
                 "~/Scripts/app/comments.js",
                 "~/Scripts/app/posts.js",
-                "~/Scripts/app/subs.js");
+                "~/Scripts/app/subs.js",
+                "~/Scripts/app/flair.js");
 
             var markdownBundle = new ScriptBundle("~/bundles/editor").Include(
                 "~/Scripts/markdown.js",

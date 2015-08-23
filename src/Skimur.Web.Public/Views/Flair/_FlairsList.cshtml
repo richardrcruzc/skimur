@@ -1,0 +1,53 @@
+﻿@model IEnumerable<ListFlairViewModel>
+<div class="table-responsive">
+    <table class="table">
+       
+
+            @foreach (var flair in Model)
+            {
+                <tr  >    <td>
+    <div class="flairForEach">
+        <div class="select-flair" data-flair-id="@flair.Id" style="cursor: pointer;" onclick="return skimurui.flair.editFlairInBox(this);">
+
+            @flair.UserName <a href="#">  @flair.Text </a>
+
+        </div>
+    </div>
+</td>
+                </tr>
+            }
+        <tr>
+            <td>
+                <div id="edit-flair-box">
+                     
+                    <div class="delete-flair" data-flair-id="" style="cursor: pointer;" onclick="return skimurui.flair.editFlairInBox(this);">
+
+                    </div>
+                    <div id="showEditInBox" class="collapse row">
+                        <div class="col-md-2">
+                            <div class="delete-selected-flair post-link" data-flair-to-delete-id="" style="cursor: pointer;" onclick="return skimurui.flair.removeFlairInBox(this);">
+                                <span id="flairUserNameDelete"></span>
+                                <label class="dager" id="flairTextDelete" />
+                                &lt;remove flair&gt;
+                            </div>
+                          
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label id="flairUserName"></label>
+
+                            <input type="hidden" id="flairId" />
+
+                            <input type="text" id="flairText" />
+
+                            <input type="button" class="btn btn-default" id="saveCurrentFlair" value="save" />
+
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>   

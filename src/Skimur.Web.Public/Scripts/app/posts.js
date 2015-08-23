@@ -4,7 +4,7 @@
 
         var $postVoting = $(".post-voting", element);
         var postId = $(element).data("post-id");
-
+        
         $(".up", $postVoting).click(function () {
             // the user wants to upvote a post!
 

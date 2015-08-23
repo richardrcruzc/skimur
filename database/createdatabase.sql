@@ -182,3 +182,38 @@ CREATE TABLE sub_user_bans
 
 CREATE INDEX comments_score_index ON comments (hot(vote_up_count, vote_down_count, date_created), date_created);
 CREATE INDEX comments_controversy_index ON comments (controversy(vote_up_count, vote_down_count), date_created);
+
+
+CREATE TABLE flairs
+(
+	id uuid NOT NULL,
+	Text text,
+	Css_Class text,
+	Text_Editable boolean,
+	Type integer,
+	User_Name text,
+	Deleted boolean,  
+  CONSTRAINT flairs_pkey PRIMARY KEY (id)
+);
+
+
+CREATE TABLE flairSettings
+(
+	id uuid NOT NULL,
+	User_Name text,
+
+	enable_user_subreddit boolean,
+	allow_user_assign_own boolean,
+	allow_submitter_assign_own_link boolean,
+
+	user_flair_possition integer,
+
+	link_possition integer,
+
+	Deleted boolean,  
+  CONSTRAINT flairs_Settings_pkey PRIMARY KEY (id)
+);
+
+
+
+

@@ -8,7 +8,7 @@ using Infrastructure.Utils;
 using ServiceStack.OrmLite;
 using Skimur;
 
-namespace Subs.Services
+namespace Subs.Services.Impl
 {
     public class FlairService : IFlairService
     {

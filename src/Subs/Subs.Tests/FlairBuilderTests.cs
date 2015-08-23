@@ -28,12 +28,7 @@ namespace Subs.Tests
             flair.FlairType = FlairType.Link;
             flair.UserName = "test1";
             flair.Deleted = false;
-            flair.DateEdited = Common.CurrentTime();
-            flair.DateCreated = Common.CurrentTime();
-            flair.IpAddress = "127.0.0.1";
-
-            _flairService.InsertFlair(flair);
-
+       
             var user1 = _flairService.GetAllFlairsForUser("test1");           
 
 

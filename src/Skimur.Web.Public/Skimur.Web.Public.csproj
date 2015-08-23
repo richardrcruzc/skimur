@@ -289,6 +289,7 @@
     <Compile Include="Startup.cs" />
     <Content Include="Scripts\app\api.js" />
     <Content Include="Scripts\app\comments.js" />
+    <Content Include="Scripts\app\flair.js" />
     <Content Include="Scripts\app\login.js" />
     <Content Include="Scripts\app\misc.js" />
     <Content Include="Scripts\app\posts.js" />
@@ -328,6 +329,11 @@
     <Content Include="Views\Subs\_CommentNode.cshtml" />
     <Content Include="Views\Subs\_CommentBody.cshtml" />
     <Content Include="Views\SubBans\Bans.cshtml" />
+    <Content Include="Views\Flair\_FlairsModal.cshtml" />
+    <Content Include="Views\Flair\_FlairsList.cshtml" />
+    <Content Include="Views\Flair\Index.cshtml" />
+    <Content Include="Views\Flair\_List.cshtml" />
+    <Content Include="Views\Flair\_List - Copy.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="favicon.ico" />
